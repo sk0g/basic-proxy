@@ -1,6 +1,10 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+	"strings"
+)
 
 func verifyContextHasRequiredValues(c *gin.Context) (errorMessage string, isOk bool) {
 	urlProxyingTo := c.GetHeader("proxy_url")
@@ -19,4 +23,15 @@ func getRemoteURLAndRemoveFromHeaders(c *gin.Context) string {
 	c.Header("proxy_url", "")
 
 	return url
+}
+
+func extractHeadersFrom(headers http.Header) map[string]string {
+	processedHeaders := make(map[string]string)
+
+	for name, val := range headers {
+		// http.Header is in the form of map[string][]string, want map[string]string
+		processedHeaders[name] = strings.Join(val, ", ")
+	}
+
+	return processedHeaders
 }
