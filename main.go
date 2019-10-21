@@ -32,7 +32,7 @@ func handleGetRequest(c *gin.Context) {
 	url := getRemoteURLAndRemoveFromHeaders(c)
 	headers := extractHeadersFrom(c.Request.Header)
 
-	var responseData map[string]interface{}
+	var responseData interface{}
 	restyClient := resty.New()
 
 	resp, _ := restyClient.
