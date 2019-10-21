@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
@@ -13,11 +12,23 @@ func main() {
 	r := gin.Default()
 
 	r.GET("/proxyGET", func(c *gin.Context) {
-		fmt.Println("GET request detected")
+		if err, isOk := verifyContextHasRequiredValues(c); !isOk {
+			c.JSON(
+				400,
+				map[string]interface{}{
+					"error": err,
+				})
+		}
 	})
 
 	r.POST("/proxyPOST", func(c *gin.Context) {
-		fmt.Println("POST request detected")
+		if err, isOk := verifyContextHasRequiredValues(c); !isOk {
+			c.JSON(
+				400,
+				map[string]interface{}{
+					"error": err,
+				})
+		}
 	})
 
 	log.Fatal(r.Run(":" + strconv.Itoa(port)))
