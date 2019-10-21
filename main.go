@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
 	"log"
@@ -13,8 +13,8 @@ const port = 8899
 func main() {
 	r := gin.Default()
 
-	r.GET("/proxyGET", handleGetRequest)
-	r.POST("/proxyPOST", handlePostRequest)
+	r.GET("/proxy", handleGetRequest)
+	r.POST("/proxy", handlePostRequest)
 
 	log.Fatal(r.Run(":" + strconv.Itoa(port)))
 }
@@ -57,5 +57,24 @@ func handlePostRequest(c *gin.Context) {
 	}
 
 	url := getRemoteURLAndRemoveFromHeaders(c)
-	fmt.Println(url)
+	headers := extractHeadersFrom(c.Request.Header)
+
+	var responseData interface{}
+	restyClient := resty.New()
+
+	var body interface{}
+	if err := json.NewDecoder(c.Request.Body).Decode(&body); err != nil {
+		log.Println("Error decoding JSON", err)
+	}
+
+	resp, _ := restyClient.
+		R().
+		SetResult(&responseData).
+		SetHeaders(headers).
+		SetBody(body).
+		Post(url)
+
+	c.JSON(
+		resp.StatusCode(),
+		responseData)
 }
