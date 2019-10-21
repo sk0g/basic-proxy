@@ -1,4 +1,4 @@
 touch .env
-cat "GIN_MODE=release" > .env
+echo "GIN_MODE=release" > .env
 go build
 rm .env
