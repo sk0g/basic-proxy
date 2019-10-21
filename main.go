@@ -17,16 +17,6 @@ func main() {
 	log.Fatal(r.Run(":" + strconv.Itoa(port)))
 }
 
-func verifyContextHasRequiredValues(c *gin.Context) (errorMessage string, isOk bool) {
-	urlProxyingTo := c.GetHeader("proxy_url")
-
-	if urlProxyingTo == "" {
-		return "No URL provided", false
-	}
-
-	return "", true
-}
-
 func handleGetRequest(c *gin.Context) {
 	if err, isOk := verifyContextHasRequiredValues(c); !isOk {
 		c.JSON(
