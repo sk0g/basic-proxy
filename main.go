@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
+	_ "github.com/joho/godotenv"
 	"log"
 	"strconv"
 )
