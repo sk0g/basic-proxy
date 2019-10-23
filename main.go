@@ -42,9 +42,15 @@ func handleGetRequest(c *gin.Context) {
 		SetHeaders(headers).
 		Get(url)
 
-	c.JSON(
-		resp.StatusCode(),
-		responseData)
+	if responseData == nil {
+		c.String(
+			resp.StatusCode(),
+			string(resp.Body()))
+	} else {
+		c.JSON(
+			resp.StatusCode(),
+			responseData)
+	}
 }
 
 func handlePostRequest(c *gin.Context) {
@@ -75,7 +81,13 @@ func handlePostRequest(c *gin.Context) {
 		SetBody(body).
 		Post(url)
 
-	c.JSON(
-		resp.StatusCode(),
-		responseData)
+	if responseData == nil {
+		c.String(
+			resp.StatusCode(),
+			string(resp.Body()))
+	} else {
+		c.JSON(
+			resp.StatusCode(),
+			responseData)
+	}
 }
