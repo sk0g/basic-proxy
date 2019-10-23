@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"github.com/gin-gonic/gin"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -34,4 +36,10 @@ func extractHeadersFrom(headers http.Header) map[string]string {
 	}
 
 	return processedHeaders
+}
+
+func readcloserToString(i *io.ReadCloser) string {
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(*i)
+	return buf.String()
 }

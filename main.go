@@ -66,14 +66,15 @@ func handlePostRequest(c *gin.Context) {
 	url := getRemoteURLAndRemoveFromHeaders(c)
 	headers := extractHeadersFrom(c.Request.Header)
 
-	var responseData interface{}
-	restyClient := resty.New()
-
 	var body interface{}
-	if err := json.NewDecoder(c.Request.Body).Decode(&body); err != nil {
-		log.Println("Error decoding JSON", err)
+	requestBody := readcloserToString(&c.Request.Body)
+	if err := json.Unmarshal([]byte(requestBody), &body); err != nil {
+		// fall back to using just the string, if json Unmarshalling fails
+		body = requestBody
 	}
 
+	var responseData interface{}
+	restyClient := resty.New()
 	resp, _ := restyClient.
 		R().
 		SetResult(&responseData).
