@@ -36,11 +36,15 @@ func handleGetRequest(c *gin.Context) {
 	var responseData interface{}
 	restyClient := resty.New()
 
-	resp, _ := restyClient.
+	resp, err := restyClient.
 		R().
 		SetResult(&responseData).
 		SetHeaders(headers).
 		Get(url)
+
+	if err != nil {
+		log.Println("Error while proxying request: \n", err)
+	}
 
 	if responseData == nil {
 		c.String(
@@ -75,12 +79,16 @@ func handlePostRequest(c *gin.Context) {
 
 	var responseData interface{}
 	restyClient := resty.New()
-	resp, _ := restyClient.
+	resp, err := restyClient.
 		R().
 		SetResult(&responseData).
 		SetHeaders(headers).
 		SetBody(body).
 		Post(url)
+
+	if err != nil {
+		log.Println("Error while proxying request: \n", err)
+	}
 
 	if responseData == nil {
 		c.String(
