@@ -33,7 +33,7 @@ func main() {
 		AllowWildcard:          true,
 		AllowBrowserExtensions: true,
 		AllowWebSockets:        true,
-		AllowFiles:             false,
+		AllowFiles:             true,
 	}))
 
 	r.GET("/proxy", handleGetRequest)
