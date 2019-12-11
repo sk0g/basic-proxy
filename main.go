@@ -16,9 +16,18 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowMethods:           []string{"POST", "GET", "OPTIONS"},
-		AllowAllOrigins:        true,
-		AllowHeaders:           []string{"proxy_url"},
+		AllowMethods:    []string{"POST", "GET", "OPTIONS"},
+		AllowAllOrigins: true,
+		AllowHeaders: []string{
+			"proxy_url",
+			"Access-Control-Allow-Headers",
+			"Access-Control-Allow-Origin",
+			"Origin",
+			"Accept",
+			"X-Requested-With",
+			"Content-Type",
+			"Access-Control-Request-Method",
+			"Access-Control-Request-Headers"},
 		AllowCredentials:       true,
 		MaxAge:                 3600,
 		AllowWildcard:          true,
