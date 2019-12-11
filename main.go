@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
 	_ "github.com/joho/godotenv"
@@ -13,6 +14,17 @@ const port = 8899
 
 func main() {
 	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		AllowAllOrigins:        true,
+		AllowHeaders:           []string{"proxy_url"},
+		AllowCredentials:       true,
+		MaxAge:                 3600,
+		AllowWildcard:          true,
+		AllowBrowserExtensions: true,
+		AllowWebSockets:        true,
+		AllowFiles:             false,
+	}))
 
 	r.GET("/proxy", handleGetRequest)
 	r.POST("/proxy", handlePostRequest)
