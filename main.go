@@ -2,12 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"log"
+	"strconv"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
 	_ "github.com/joho/godotenv"
-	"log"
-	"strconv"
 )
 
 const port = 8899
@@ -93,23 +94,29 @@ func handlePostRequest(c *gin.Context) {
 	headers := extractHeadersFrom(c.Request.Header)
 
 	var body interface{}
-	requestBody := readcloserToString(&c.Request.Body)
+	requestBody, _ := readcloserToString(c.Request.Body)
 	if err := json.Unmarshal([]byte(requestBody), &body); err != nil {
 		// fall back to using just the string, if json Unmarshalling fails
 		body = requestBody
 	}
 
-	var responseData interface{}
-	restyClient := resty.New()
-	resp, err := restyClient.
+	var responseData map[string]interface{}
+
+	resp, err := resty.
+		New().
 		R().
-		SetResult(&responseData).
+		SetBody(requestBody).
 		SetHeaders(headers).
-		SetBody(body).
+		SetResult(&responseData).
 		Post(url)
 
 	if err != nil {
-		log.Println("Error while proxying request: \n", err)
+		c.JSON(
+			400,
+			map[string]interface{}{
+				"error": err.Error(),
+			})
+		return
 	}
 
 	if responseData == nil {

@@ -2,10 +2,11 @@ package main
 
 import (
 	"bytes"
-	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func verifyContextHasRequiredValues(c *gin.Context) (errorMessage string, isOk bool) {
@@ -38,8 +39,8 @@ func extractHeadersFrom(headers http.Header) map[string]string {
 	return processedHeaders
 }
 
-func readcloserToString(i *io.ReadCloser) string {
+func readcloserToString(i io.ReadCloser) (string, error) {
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(*i)
-	return buf.String()
+	_, err := buf.ReadFrom(i)
+	return buf.String(), err
 }
