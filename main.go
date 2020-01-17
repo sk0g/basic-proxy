@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"log"
 	"strconv"
@@ -102,8 +103,11 @@ func handlePostRequest(c *gin.Context) {
 
 	var responseData map[string]interface{}
 
-	resp, err := resty.
-		New().
+	r := resty.New()
+	r.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	defer r.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: false})
+
+	resp, err := r.
 		R().
 		SetBody(requestBody).
 		SetHeaders(headers).
