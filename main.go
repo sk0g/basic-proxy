@@ -103,7 +103,7 @@ func handlePostRequest(c *gin.Context) {
 		body = requestBody
 	}
 
-	var responseData map[string]interface{}
+	var responseData interface{}
 
 	r := resty.New()
 	r.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
