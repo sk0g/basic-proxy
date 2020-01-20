@@ -46,6 +46,7 @@ func main() {
 
 func handleGetRequest(c *gin.Context) {
 	if err, isOk := verifyContextHasRequiredValues(c); !isOk {
+		log.Println(err)
 		c.JSON(
 			400,
 			map[string]interface{}{
@@ -67,7 +68,7 @@ func handleGetRequest(c *gin.Context) {
 		Get(url)
 
 	if err != nil {
-		log.Println("Error while proxying request: \n", err)
+		log.Println(err)
 	}
 
 	if responseData == nil {
@@ -83,6 +84,7 @@ func handleGetRequest(c *gin.Context) {
 
 func handlePostRequest(c *gin.Context) {
 	if err, isOk := verifyContextHasRequiredValues(c); !isOk {
+		log.Println(err)
 		c.JSON(
 			400,
 			map[string]interface{}{
@@ -115,6 +117,7 @@ func handlePostRequest(c *gin.Context) {
 		Post(url)
 
 	if err != nil {
+		log.Println(err)
 		c.JSON(
 			400,
 			map[string]interface{}{
@@ -132,4 +135,8 @@ func handlePostRequest(c *gin.Context) {
 			resp.StatusCode(),
 			responseData)
 	}
+}
+
+func init() {
+	log.SetFlags(log.Lshortfile)
 }
