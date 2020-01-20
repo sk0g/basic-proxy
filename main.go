@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -126,7 +127,14 @@ func handlePostRequest(c *gin.Context) {
 		return
 	}
 
+	// response headers
+	for k, v := range resp.Header() {
+		c.Header(k, strings.Join(v, "; "))
+	}
+
+	// response body
 	if responseData == nil {
+
 		c.String(
 			resp.StatusCode(),
 			string(resp.Body()))
