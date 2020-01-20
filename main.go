@@ -40,7 +40,9 @@ func main() {
 	}))
 
 	r.GET("/proxy", handleGetRequest)
+
 	r.POST("/proxy", handlePostRequest)
+	r.POST("/proxy_xml", handlePostXmlRequest)
 
 	log.Fatal(r.Run(":" + strconv.Itoa(port)))
 }
@@ -84,6 +86,51 @@ func handleGetRequest(c *gin.Context) {
 }
 
 func handlePostRequest(c *gin.Context) {
+	if err, isOk := verifyContextHasRequiredValues(c); !isOk {
+		c.JSON(
+			400,
+			map[string]interface{}{
+				"error": err,
+			})
+		return
+	}
+
+	url := getRemoteURLAndRemoveFromHeaders(c)
+	headers := extractHeadersFrom(c.Request.Header)
+
+	var body interface{}
+	requestBody, err := readcloserToString(c.Request.Body)
+	if err := json.Unmarshal([]byte(requestBody), &body); err != nil {
+		log.Println(err)
+		// fall back to using just the string, if json Unmarshaling fails
+		body = requestBody
+	}
+
+	var responseData interface{}
+	restyClient := resty.New()
+	resp, err := restyClient.
+		R().
+		SetResult(&responseData).
+		SetHeaders(headers).
+		SetBody(body).
+		Post(url)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	if responseData == nil {
+		c.String(
+			resp.StatusCode(),
+			string(resp.Body()))
+	} else {
+		c.JSON(
+			resp.StatusCode(),
+			responseData)
+	}
+}
+
+func handlePostXmlRequest(c *gin.Context) {
 	if err, isOk := verifyContextHasRequiredValues(c); !isOk {
 		log.Println(err)
 		c.JSON(
