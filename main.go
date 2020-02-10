@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 
@@ -13,7 +14,21 @@ import (
 	_ "github.com/joho/godotenv"
 )
 
-const port = 8899
+var port = 8899
+
+func init() {
+	if envPort := os.Getenv("port"); len(envPort) >= 3 {
+		if portNum, err := strconv.Atoi(envPort); err == nil {
+			port = portNum
+		} else {
+			log.Printf("Port number is not a number, instead is '%v'. Defaulted to 8899\n", envPort)
+		}
+	} else {
+		log.Printf("Port number has to be at least 3 digits and a number, is '%v'. Defaulted to 8899\n", envPort)
+	}
+
+	log.SetFlags(log.Lshortfile)
+}
 
 func main() {
 	r := gin.Default()
@@ -192,8 +207,4 @@ func handlePostXmlRequest(c *gin.Context) {
 			resp.StatusCode(),
 			responseData)
 	}
-}
-
-func init() {
-	log.SetFlags(log.Lshortfile)
 }
