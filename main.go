@@ -22,15 +22,17 @@ func main() {
 		AllowMethods:    []string{"POST", "GET", "OPTIONS"},
 		AllowAllOrigins: true,
 		AllowHeaders: []string{
-			"proxy_url",
+			"Accept",
 			"Access-Control-Allow-Headers",
 			"Access-Control-Allow-Origin",
-			"Origin",
-			"Accept",
-			"X-Requested-With",
-			"Content-Type",
+			"Access-Control-Request-Headers",
 			"Access-Control-Request-Method",
-			"Access-Control-Request-Headers"},
+			"Authorization",
+			"Content-Type",
+			"Origin",
+			"X-Requested-With",
+			"proxy_url",
+		},
 		AllowCredentials:       true,
 		MaxAge:                 3600,
 		AllowWildcard:          true,
@@ -99,7 +101,7 @@ func handlePostRequest(c *gin.Context) {
 	headers := extractHeadersFrom(c.Request.Header)
 
 	var body interface{}
-	requestBody, err := readcloserToString(c.Request.Body)
+	requestBody, _ := readcloserToString(c.Request.Body)
 	if err := json.Unmarshal([]byte(requestBody), &body); err != nil {
 		log.Println(err)
 		// fall back to using just the string, if json Unmarshaling fails
