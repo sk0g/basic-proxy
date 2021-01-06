@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -27,6 +28,20 @@ func getRemoteURLAndRemoveFromHeaders(c *gin.Context) string {
 
 	return url
 }
+
+func getInsecureSkipVerifyAndRemoveFromHeaders(c *gin.Context) bool {
+	skipVerifyCheck, err := strconv.ParseBool(c.GetHeader("skipVerifyCheck"))
+	// fallback to verifying certs if header value can not be determined
+	if err != nil {
+		skipVerifyCheck = true
+	}
+
+	// no need to pass on the skipVerifyCheck header
+	c.Header("skipVerifyCheck", "")
+
+	return skipVerifyCheck
+}
+
 
 func extractHeadersFrom(headers http.Header) map[string]string {
 	processedHeaders := make(map[string]string)
