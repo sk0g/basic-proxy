@@ -33,7 +33,7 @@ func getInsecureSkipVerifyAndRemoveFromHeaders(c *gin.Context) bool {
 	skipVerifyCheck, err := strconv.ParseBool(c.GetHeader("skipVerifyCheck"))
 	// fallback to verifying certs if header value can not be determined
 	if err != nil {
-		skipVerifyCheck = true
+		skipVerifyCheck = false
 	}
 
 	// no need to pass on the skipVerifyCheck header
