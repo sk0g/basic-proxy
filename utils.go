@@ -30,14 +30,14 @@ func getRemoteURLAndRemoveFromHeaders(c *gin.Context) string {
 }
 
 func getInsecureSkipVerifyAndRemoveFromHeaders(c *gin.Context) bool {
-	skipVerifyCheck, err := strconv.ParseBool(c.GetHeader("skipVerifyCheck"))
+	skipVerifyCheck, err := strconv.ParseBool(c.GetHeader("cert_verify"))
 	// fallback to verifying certs if header value can not be determined
 	if err != nil {
 		skipVerifyCheck = false
 	}
 
 	// no need to pass on the skipVerifyCheck header
-	c.Header("skipVerifyCheck", "")
+	c.Header("cert_verify", "")
 
 	return skipVerifyCheck
 }
