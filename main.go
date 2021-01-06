@@ -76,12 +76,14 @@ func handleGetRequest(c *gin.Context) {
 	}
 
 	url := getRemoteURLAndRemoveFromHeaders(c)
+	skipVerifyCheck := getInsecureSkipVerifyAndRemoveFromHeaders(c)
 	headers := extractHeadersFrom(c.Request.Header)
 
 	var responseData interface{}
 	restyClient := resty.New()
 
 	resp, err := restyClient.
+		SetTLSClientConfig(&tls.Config{InsecureSkipVerify: skipVerifyCheck}).
 		R().
 		SetResult(&responseData).
 		SetHeaders(headers).
@@ -113,6 +115,7 @@ func handlePostRequest(c *gin.Context) {
 	}
 
 	url := getRemoteURLAndRemoveFromHeaders(c)
+	skipVerifyCheck := getInsecureSkipVerifyAndRemoveFromHeaders(c)
 	headers := extractHeadersFrom(c.Request.Header)
 
 	var body interface{}
@@ -126,6 +129,7 @@ func handlePostRequest(c *gin.Context) {
 	var responseData interface{}
 	restyClient := resty.New()
 	resp, err := restyClient.
+		SetTLSClientConfig(&tls.Config{InsecureSkipVerify: skipVerifyCheck}).
 		R().
 		SetResult(&responseData).
 		SetHeaders(headers).
@@ -159,6 +163,7 @@ func handlePostXmlRequest(c *gin.Context) {
 	}
 
 	url := getRemoteURLAndRemoveFromHeaders(c)
+	skipVerifyCheck := getInsecureSkipVerifyAndRemoveFromHeaders(c)
 	headers := extractHeadersFrom(c.Request.Header)
 
 	var body interface{}
@@ -175,6 +180,7 @@ func handlePostXmlRequest(c *gin.Context) {
 	defer r.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: false})
 
 	resp, err := r.
+		SetTLSClientConfig(&tls.Config{InsecureSkipVerify: skipVerifyCheck}).
 		R().
 		SetBody(requestBody).
 		SetHeaders(headers).
