@@ -42,7 +42,6 @@ func getInsecureSkipVerifyAndRemoveFromHeaders(c *gin.Context) bool {
 	return skipVerifyCheck
 }
 
-
 func extractHeadersFrom(headers http.Header) map[string]string {
 	processedHeaders := make(map[string]string)
 
