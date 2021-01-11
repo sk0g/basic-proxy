@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
+	"github.com/go-resty/resty/v2"
 	"io"
 	"net/http"
 	"strconv"
@@ -57,4 +59,11 @@ func readcloserToString(i io.ReadCloser) (string, error) {
 	buf := new(bytes.Buffer)
 	_, err := buf.ReadFrom(i)
 	return buf.String(), err
+}
+
+func restyClientInit(c *gin.Context) *resty.Client{
+	skipVerifyCheck := getInsecureSkipVerifyAndRemoveFromHeaders(c)
+	return resty.New().
+		SetTLSClientConfig(&tls.Config{InsecureSkipVerify: skipVerifyCheck}).
+		SetHeaders(extractHeadersFrom(c.Request.Header))
 }
