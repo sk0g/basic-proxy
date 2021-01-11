@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"log"
 	"os"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/go-resty/resty/v2"
 	_ "github.com/joho/godotenv"
 )
 
@@ -57,7 +55,6 @@ func main() {
 	}))
 
 	r.GET("/proxy", handleGetRequest)
-
 	r.POST("/proxy", handlePostRequest)
 	r.POST("/proxy_xml", handlePostXmlRequest)
 
@@ -76,17 +73,12 @@ func handleGetRequest(c *gin.Context) {
 	}
 
 	url := getRemoteURLAndRemoveFromHeaders(c)
-	skipVerifyCheck := getInsecureSkipVerifyAndRemoveFromHeaders(c)
-	headers := extractHeadersFrom(c.Request.Header)
 
+	restyClient := restyClientInit(c)
 	var responseData interface{}
-	restyClient := resty.New()
-
 	resp, err := restyClient.
-		SetTLSClientConfig(&tls.Config{InsecureSkipVerify: skipVerifyCheck}).
 		R().
 		SetResult(&responseData).
-		SetHeaders(headers).
 		Get(url)
 
 	if err != nil {
@@ -115,8 +107,6 @@ func handlePostRequest(c *gin.Context) {
 	}
 
 	url := getRemoteURLAndRemoveFromHeaders(c)
-	skipVerifyCheck := getInsecureSkipVerifyAndRemoveFromHeaders(c)
-	headers := extractHeadersFrom(c.Request.Header)
 
 	var body interface{}
 	requestBody, _ := readcloserToString(c.Request.Body)
@@ -126,13 +116,11 @@ func handlePostRequest(c *gin.Context) {
 		body = requestBody
 	}
 
+	restyClient := restyClientInit(c)
 	var responseData interface{}
-	restyClient := resty.New()
 	resp, err := restyClient.
-		SetTLSClientConfig(&tls.Config{InsecureSkipVerify: skipVerifyCheck}).
 		R().
 		SetResult(&responseData).
-		SetHeaders(headers).
 		SetBody(body).
 		Post(url)
 
@@ -163,8 +151,6 @@ func handlePostXmlRequest(c *gin.Context) {
 	}
 
 	url := getRemoteURLAndRemoveFromHeaders(c)
-	skipVerifyCheck := getInsecureSkipVerifyAndRemoveFromHeaders(c)
-	headers := extractHeadersFrom(c.Request.Header)
 
 	var body interface{}
 	requestBody, _ := readcloserToString(c.Request.Body)
@@ -173,17 +159,11 @@ func handlePostXmlRequest(c *gin.Context) {
 		body = requestBody
 	}
 
+	restyClient := restyClientInit(c)
 	var responseData interface{}
-
-	r := resty.New()
-	r.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
-	defer r.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: false})
-
-	resp, err := r.
-		SetTLSClientConfig(&tls.Config{InsecureSkipVerify: skipVerifyCheck}).
+	resp, err := restyClient.
 		R().
 		SetBody(requestBody).
-		SetHeaders(headers).
 		SetResult(&responseData).
 		Post(url)
 
